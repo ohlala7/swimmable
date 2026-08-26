@@ -1,0 +1,126 @@
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--abyss);
+  padding-top: var(--sat);
+  padding-bottom: calc(var(--sab) + var(--tab-bar-height));
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+  overflow: hidden;
+}
+
+#tabs-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-panel[hidden] { display: none; }
+.tab-panel.active  { display: flex; }
+
+/**
+ * The conditions screen sits in an ambient light field: a soft column of colour
+ * rising from the horizon, tinted by the day's verdict. It is set on a
+ * pseudo-element so the tint can cross-fade when the verdict changes without
+ * repainting the scrolling content.
+ */
+#tab-conditions {
+  padding: 8px 20px 28px;
+  gap: 18px;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 60% at 50% 0%, var(--shelf) 0%, transparent 70%),
+    linear-gradient(to bottom, var(--deep) 0%, var(--abyss) 55%);
+}
+
+#tab-conditions::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 62%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms var(--ease-out), background 700ms var(--ease-out);
+  background: radial-gradient(90% 100% at 50% 0%, var(--ambient, transparent) 0%, transparent 72%);
+}
+
+#tab-conditions[data-ambient]::before { opacity: 1; }
+#tab-conditions[data-ambient="Go"]      { --ambient: var(--go-glow); }
+#tab-conditions[data-ambient="Sketchy"] { --ambient: var(--sketchy-glow); }
+#tab-conditions[data-ambient="No"]      { --ambient: var(--no-glow); }
+
+#tab-map { padding: 0; overflow: hidden; }
+#tab-saved { padding: 0 20px 28px; }
+
+/**
+ * Wide screens: the app is designed as a single phone-width column. Rather than
+ * stretching the layout, cap it and centre it — a stretched 1400px verdict card
+ * looks broken, not responsive.
+ */
+@media (min-width: 620px) {
+  #tab-conditions, #tab-saved {
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* ── Bottom tab bar ────────────────────────────────────────────────────────── */
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--tab-bar-height) + var(--sab));
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+  display: flex;
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--abyss) 82%, transparent);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+  border-top: 1px solid var(--hairline);
+  z-index: 100;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding-top: 11px;
+  color: var(--text-tertiary);
+  transition: color 220ms var(--ease-out);
+  min-height: 44px;
+}
+
+.tab-btn.active { color: var(--accent); }
+.tab-btn .tab-icon { transition: transform 260ms var(--ease-spring); }
+.tab-btn.active .tab-icon { transform: translateY(-1px) scale(1.06); }
+
+.tab-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}

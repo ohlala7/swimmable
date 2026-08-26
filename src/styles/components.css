@@ -1,0 +1,423 @@
+/* ── Location header ───────────────────────────────────────────────────────── */
+
+.conditions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.location-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border-radius: 100px;
+  padding: 6px 4px 6px 0;
+  color: var(--text-primary);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  transition: opacity 150ms ease;
+  max-width: calc(100% - 52px);
+}
+
+.location-chip:active { opacity: 0.6; }
+
+.location-pin-icon { color: var(--accent); }
+.location-chevron  { color: var(--text-tertiary); margin-left: 1px; }
+
+.location-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-spot-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  color: var(--text-tertiary);
+  transition: color 250ms ease, transform 220ms var(--ease-spring), background 150ms ease;
+}
+
+.save-spot-btn[aria-pressed="true"] { color: var(--sketchy); border-color: rgba(255,194,77,0.3); background: var(--sketchy-dim); }
+.save-spot-btn[aria-pressed="true"] #save-star-path { fill: var(--sketchy); }
+.save-spot-btn:active { transform: scale(0.88); }
+
+/* ── Day selector ──────────────────────────────────────────────────────────── */
+
+.day-selector-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+
+.day-selector {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+  width: max-content;
+}
+
+/**
+ * Days read as a row of tick marks with a coloured status dot, not as chunky
+ * filled buttons. The active day is marked by a hairline and a lift in text
+ * contrast rather than a solid accent fill — a saturated pill would compete
+ * with the verdict word, which has to stay the loudest thing on screen.
+ */
+.day-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  transition: color 200ms ease, background 200ms ease, border-color 200ms ease;
+  cursor: pointer;
+  min-width: 52px;
+}
+
+.day-pill.active {
+  color: var(--text-primary);
+  background: var(--panel);
+  border-color: var(--hairline-hi);
+}
+
+.day-pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+
+.day-pill-dot[data-verdict="Go"]      { background: var(--go); }
+.day-pill-dot[data-verdict="Sketchy"] { background: var(--sketchy); }
+.day-pill-dot[data-verdict="No"]      { background: var(--no); }
+
+.day-pill.active .day-pill-dot[data-verdict="Go"]      { box-shadow: 0 0 0 3px var(--go-dim); }
+.day-pill.active .day-pill-dot[data-verdict="Sketchy"] { box-shadow: 0 0 0 3px var(--sketchy-dim); }
+.day-pill.active .day-pill-dot[data-verdict="No"]      { box-shadow: 0 0 0 3px var(--no-dim); }
+
+/* ── Hourly strip ──────────────────────────────────────────────────────────── */
+
+.hourly-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hourly-heading {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.hourly-strip-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+
+.hourly-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 2px 0 4px;
+  width: max-content;
+  height: 92px;
+}
+
+/**
+ * Each hour is a vertical bar whose HEIGHT encodes the score and whose COLOUR
+ * encodes the verdict. The previous strip showed a coloured dot plus the word
+ * "Skchy" truncated to fit — the bar carries strictly more information in less
+ * space, and the shape of the day becomes readable at a glance.
+ */
+.hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  width: 26px;
+  height: 100%;
+  border-radius: 8px;
+  background: none;
+  cursor: default;
+}
+
+.hourly-bar-track {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 100px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.hourly-bar {
+  width: 100%;
+  border-radius: 100px;
+  min-height: 4px;
+  transition: height 500ms var(--ease-spring), background 300ms ease;
+}
+
+.hourly-bar[data-verdict="Go"]      { background: var(--go); }
+.hourly-bar[data-verdict="Sketchy"] { background: var(--sketchy); }
+.hourly-bar[data-verdict="No"]      { background: var(--no); opacity: 0.55; }
+
+.hourly-time {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+}
+
+.hourly-item.current-hour .hourly-time {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.hourly-item.current-hour .hourly-bar-track {
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+
+/* ── Timestamp ─────────────────────────────────────────────────────────────── */
+
+.data-timestamp {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 15px;
+  background: var(--accent);
+  color: var(--abyss);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 100px;
+  transition: opacity 150ms ease, transform 100ms ease;
+}
+
+.btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.3; pointer-events: none; }
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 15px;
+  background: var(--panel);
+  border: 1px solid var(--hairline-hi);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 100px;
+  transition: background 150ms ease;
+}
+
+.btn-secondary:active { background: var(--panel-hi); }
+
+/* ── Saved tab ─────────────────────────────────────────────────────────────── */
+
+.saved-header { padding: 26px 0 16px; }
+
+.saved-title {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.saved-item {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: background 150ms ease, transform 120ms ease;
+}
+
+.saved-item:active { transform: scale(0.985); background: var(--panel-hi); }
+
+.saved-item-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.saved-item-verdicts { display: flex; gap: 7px; margin-bottom: 7px; }
+
+.saved-verdict-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.saved-verdict-badge[data-verdict="Go"]      { background: var(--go-dim);      color: var(--go); }
+.saved-verdict-badge[data-verdict="Sketchy"] { background: var(--sketchy-dim); color: var(--sketchy); }
+.saved-verdict-badge[data-verdict="No"]      { background: var(--no-dim);      color: var(--no); }
+
+.saved-item-window { font-size: 12px; color: var(--text-secondary); }
+
+.saved-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.saved-empty[hidden] { display: none; }
+.saved-empty svg { margin-bottom: 10px; color: var(--text-tertiary); }
+.saved-empty-text { font-size: 15px; font-weight: 600; color: var(--text-secondary); }
+.saved-empty-hint { font-size: 13px; color: var(--text-tertiary); }
+
+/* ── Map search ────────────────────────────────────────────────────────────── */
+
+.map-search-wrap {
+  position: absolute;
+  top: calc(var(--sat) + 12px);
+  left: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.map-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: color-mix(in srgb, var(--shelf) 88%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--hairline-hi);
+  border-radius: 100px;
+  padding: 11px 16px;
+  box-shadow: var(--shadow-float);
+}
+
+.search-icon { color: var(--text-secondary); flex-shrink: 0; }
+
+#location-search {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 15px;
+  min-width: 0;
+}
+
+#location-search::placeholder { color: var(--text-tertiary); }
+
+.search-clear {
+  color: var(--text-tertiary);
+  padding: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+}
+
+.search-clear[hidden] { display: none; }
+
+.search-results {
+  margin-top: 8px;
+  background: color-mix(in srgb, var(--shelf) 95%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-float);
+  list-style: none;
+}
+
+.search-results[hidden] { display: none; }
+
+.search-result-item {
+  padding: 13px 17px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--hairline);
+  transition: background 100ms ease;
+}
+
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover,
+.search-result-item.focused { background: var(--panel-hi); }
+
+.search-result-name    { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.search-result-country { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── GPS FAB ───────────────────────────────────────────────────────────────── */
+
+.gps-fab {
+  position: absolute;
+  bottom: calc(24px + var(--tab-bar-height) + var(--sab));
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--shelf) 90%, transparent);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--hairline-hi);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  transition: transform 160ms var(--ease-spring);
+  z-index: 5;
+}
+
+.gps-fab:active { transform: scale(0.9); }

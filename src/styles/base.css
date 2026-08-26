@@ -1,0 +1,172 @@
+/**
+ * Design language — "deep water instrument".
+ *
+ * Dark by default: this app is opened at dawn on a beach and last thing at night
+ * before an early session. The palette is built from actual water depth colours
+ * rather than generic UI greys, and elevation is expressed with hairlines and
+ * light-on-glass instead of drop shadows, which read as cheap on dark surfaces.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Depth — darkest at the edges, lifting toward the horizon */
+  --abyss:      #04090F;
+  --deep:       #071320;
+  --shelf:      #0B1B2B;
+
+  /* Glass panels sit ON the depth, never as opaque blocks */
+  --panel:      rgba(255, 255, 255, 0.040);
+  --panel-hi:   rgba(255, 255, 255, 0.072);
+  --panel-press:rgba(255, 255, 255, 0.100);
+  --hairline:   rgba(255, 255, 255, 0.085);
+  --hairline-hi:rgba(255, 255, 255, 0.150);
+
+  /* Type */
+  --text-primary:   #E9F2F9;
+  --text-secondary: rgba(233, 242, 249, 0.58);
+  --text-tertiary:  rgba(233, 242, 249, 0.32);
+
+  /* Accent — bioluminescent cyan */
+  --accent:      #55CFEA;
+  --accent-dim:  rgba(85, 207, 234, 0.13);
+  --accent-line: rgba(85, 207, 234, 0.35);
+
+  /* Verdicts */
+  --go:          #4FE3A6;
+  --go-dim:      rgba(79, 227, 166, 0.12);
+  --go-glow:     rgba(79, 227, 166, 0.22);
+  --sketchy:     #FFC24D;
+  --sketchy-dim: rgba(255, 194, 77, 0.12);
+  --sketchy-glow:rgba(255, 194, 77, 0.20);
+  --no:          #FF7078;
+  --no-dim:      rgba(255, 112, 120, 0.12);
+  --no-glow:     rgba(255, 112, 120, 0.20);
+
+  /* Shadows exist only for sheets lifting off the page */
+  --shadow-sheet: 0 -24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-float: 0 8px 28px rgba(0, 0, 0, 0.45);
+
+  /* Safe areas */
+  --sat: env(safe-area-inset-top,    0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
+  --sar: env(safe-area-inset-right,  0px);
+
+  --tab-bar-height: 62px;
+
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out:    cubic-bezier(0.0, 0, 0.2, 1);
+
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/**
+ * Light mode is a genuine daylight variant, not an inversion: warm sand and
+ * pale sky, because the dark palette washes out completely in direct sun on a
+ * beach — which is exactly where this app gets used.
+ */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --abyss:      #F2F6FA;
+    --deep:       #FAFCFE;
+    --shelf:      #FFFFFF;
+
+    --panel:      rgba(9, 30, 54, 0.030);
+    --panel-hi:   rgba(9, 30, 54, 0.055);
+    --panel-press:rgba(9, 30, 54, 0.085);
+    --hairline:   rgba(9, 30, 54, 0.095);
+    --hairline-hi:rgba(9, 30, 54, 0.170);
+
+    --text-primary:   #0A1826;
+    --text-secondary: rgba(10, 24, 38, 0.58);
+    --text-tertiary:  rgba(10, 24, 38, 0.34);
+
+    --accent:      #0A7EA4;
+    --accent-dim:  rgba(10, 126, 164, 0.10);
+    --accent-line: rgba(10, 126, 164, 0.30);
+
+    --go:          #06996A;
+    --go-dim:      rgba(6, 153, 106, 0.10);
+    --go-glow:     rgba(6, 153, 106, 0.16);
+    --sketchy:     #B87500;
+    --sketchy-dim: rgba(184, 117, 0, 0.10);
+    --sketchy-glow:rgba(184, 117, 0, 0.14);
+    --no:          #D03B42;
+    --no-dim:      rgba(208, 59, 66, 0.10);
+    --no-glow:     rgba(208, 59, 66, 0.14);
+
+    --shadow-sheet: 0 -20px 60px rgba(9, 30, 54, 0.16);
+    --shadow-float: 0 6px 24px rgba(9, 30, 54, 0.14);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--abyss);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a { color: inherit; text-decoration: none; }
+svg { display: block; flex-shrink: 0; }
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/**
+ * Numerals are tabular everywhere they represent a measurement, so digits stop
+ * jittering as values tick over between hours.
+ */
+.tnum, .cond-value, .detail-wave-num, .hourly-time {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Small wide-tracked caps — the app's label voice */
+.activity-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

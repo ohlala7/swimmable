@@ -1,0 +1,376 @@
+/* ── Conditions bar ────────────────────────────────────────────────────────── */
+
+.conditions-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 14px 4px;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+}
+
+.cond-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.cond-divider {
+  width: 1px;
+  background: var(--hairline);
+  margin: 2px 0;
+}
+
+.cond-value {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.cond-wind-value {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/**
+ * The arrow points the way the wind is BLOWING (bearing + 180°), because that is
+ * what a swimmer standing on the beach needs to picture. Meteorological
+ * convention reports the direction it blows FROM; the rotation is applied in JS.
+ */
+.wind-arrow {
+  color: var(--accent);
+  transition: transform 500ms var(--ease-spring);
+}
+
+.cond-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.cond-label[data-relation="offshore"] { color: var(--go); }
+.cond-label[data-relation="onshore"]  { color: var(--sketchy); }
+
+/* ── Verdict cards ─────────────────────────────────────────────────────────── */
+
+.verdict-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.verdict-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 24px;
+  padding: 20px 22px 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition:
+    border-color 400ms ease,
+    background 400ms ease,
+    transform 140ms var(--ease-out);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.verdict-card:active { transform: scale(0.985); background: var(--panel-hi); }
+
+/**
+ * Verdict colour arrives as a light source washing in from the right edge, not
+ * as a background fill. Filling the card flattens it; a directional wash keeps
+ * the glass reading as glass and lets the type stay high-contrast.
+ */
+.verdict-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+  background: radial-gradient(120% 140% at 100% 50%, var(--wash) 0%, transparent 62%);
+}
+
+.verdict-card[data-verdict]::after     { opacity: 1; }
+.verdict-card[data-verdict="Go"]       { --wash: var(--go-dim);      border-color: rgba(79,227,166,0.22); }
+.verdict-card[data-verdict="Sketchy"]  { --wash: var(--sketchy-dim); border-color: rgba(255,194,77,0.22); }
+.verdict-card[data-verdict="No"]       { --wash: var(--no-dim);      border-color: rgba(255,112,120,0.22); }
+
+.verdict-card-inner { flex: 1; min-width: 0; position: relative; }
+
+.verdict-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 6px 0 7px;
+}
+
+/**
+ * The verdict is set in a high-contrast display serif. Every other weather app
+ * shouts in a heavy geometric sans; a serif at this size reads as considered
+ * rather than loud, and it is the single strongest identity cue in the app.
+ */
+.verdict-word {
+  font-family: var(--font-display);
+  font-size: 54px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+  color: var(--text-tertiary);
+  transition: color 400ms ease;
+}
+
+.verdict-word[data-verdict="Go"]      { color: var(--go); }
+.verdict-word[data-verdict="Sketchy"] { color: var(--sketchy); }
+.verdict-word[data-verdict="No"]      { color: var(--no); }
+
+/* "Unknown" is a long word where the others are short — set it smaller and in
+   italic so it reads as an absence of a verdict rather than a verdict. */
+.verdict-word[data-verdict="Unknown"] {
+  color: var(--text-tertiary);
+  font-style: italic;
+  font-size: 38px;
+}
+
+.verdict-card[data-verdict="Unknown"] { --wash: transparent; border-style: dashed; }
+
+/* Per-activity Go window, shown on future days */
+.card-window {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--go);
+  background: var(--go-dim);
+  border: 1px solid rgba(79,227,166,0.20);
+  border-radius: 100px;
+  padding: 3px 9px;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.card-window[hidden] { display: none; }
+
+.verdict-summary {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-chevron { color: var(--text-tertiary); flex-shrink: 0; }
+
+/* ── Detail sheet ──────────────────────────────────────────────────────────── */
+
+.detail-sheet { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+.detail-sheet:not([hidden]) { pointer-events: auto; }
+
+.detail-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition: background 320ms ease, -webkit-backdrop-filter 320ms ease, backdrop-filter 320ms ease;
+}
+
+.detail-sheet:not([hidden]) .detail-backdrop {
+  background: rgba(0,0,0,0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.detail-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 560px;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, var(--shelf) 0%, var(--deep) 100%);
+  border-radius: 30px 30px 0 0;
+  border-top: 1px solid var(--hairline-hi);
+  padding: 0 26px calc(40px + var(--sab));
+  box-shadow: var(--shadow-sheet);
+  transform: translateY(100%);
+  transition: transform 420ms var(--ease-spring);
+  will-change: transform;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.detail-sheet:not([hidden]) .detail-panel { transform: translateY(0); }
+
+.detail-close {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--panel-hi);
+  color: var(--text-secondary);
+  transition: background 150ms ease;
+}
+
+.detail-close:active { background: var(--panel-press); }
+
+.detail-activity { display: block; margin-top: 30px; }
+
+.detail-wave { display: flex; align-items: baseline; gap: 7px; margin-top: 12px; }
+
+.detail-wave-num {
+  font-family: var(--font-display);
+  font-size: 78px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  color: var(--text-primary);
+}
+
+.detail-wave-unit {
+  font-family: var(--font-display);
+  font-size: 30px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.detail-wave-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 6px 0 20px;
+}
+
+.detail-summary {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* ── Factor breakdown ──────────────────────────────────────────────────────── */
+
+/**
+ * Shows WHY the verdict is what it is. The app deliberately hides the 0–100
+ * score — a number invites arguing with it — but hiding the reasoning entirely
+ * makes the verdict feel arbitrary. Naming the limiting factor is the middle
+ * ground: it explains without turning the app into a spreadsheet.
+ */
+.factor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 22px 0 4px;
+  list-style: none;
+}
+
+.factor-row { display: grid; grid-template-columns: 66px 1fr auto; align-items: center; gap: 12px; }
+
+.factor-name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.factor-track {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--panel-hi);
+  overflow: hidden;
+}
+
+.factor-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--text-secondary);
+  transform-origin: left;
+  transition: width 600ms var(--ease-spring);
+}
+
+.factor-row[data-limiting="true"] .factor-fill { background: var(--sketchy); }
+.factor-row[data-limiting="true"] .factor-name { color: var(--text-secondary); }
+
+.factor-note { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; }
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 18px;
+}
+
+.meta-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 100px;
+  padding: 5px 11px;
+}
+
+.meta-chip[data-tone="warn"]   { color: var(--sketchy); border-color: rgba(255,194,77,0.25); background: var(--sketchy-dim); }
+.meta-chip[data-tone="danger"] { color: var(--no);      border-color: rgba(255,112,120,0.25); background: var(--no-dim); }
+.meta-chip[data-tone="good"]   { color: var(--go);      border-color: rgba(79,227,166,0.25);  background: var(--go-dim); }
+
+.btn-cam {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-line);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  transition: background 150ms ease;
+}
+
+.btn-cam[hidden] { display: none; }
+
+/* ── Skeleton loading ──────────────────────────────────────────────────────── */
+
+.verdict-card.skeleton-loading .verdict-word,
+.verdict-card.skeleton-loading .verdict-summary {
+  border-radius: 8px;
+  color: transparent;
+  animation: skeleton-shimmer 1.5s infinite linear;
+  background-size: 220% 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--panel) 25%,
+    var(--panel-hi) 50%,
+    var(--panel) 75%
+  );
+}
+
+.verdict-card.skeleton-loading .verdict-word    { width: 46%; height: 46px; }
+.verdict-card.skeleton-loading .verdict-summary { width: 78%; height: 15px; }

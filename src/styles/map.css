@@ -1,0 +1,54 @@
+#map {
+  position: absolute;
+  inset: 0;
+  background: var(--abyss);
+}
+
+/* MapLibre attribution */
+.maplibregl-ctrl-bottom-right {
+  bottom: calc(var(--tab-bar-height) + var(--sab) + 120px) !important;
+  right: 8px !important;
+}
+
+.maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--shelf) 85%, transparent) !important;
+  color: var(--text-tertiary) !important;
+  font-size: 10px !important;
+  border-radius: 6px !important;
+}
+
+.maplibregl-ctrl-attrib a { color: var(--text-secondary) !important; }
+.maplibregl-ctrl-logo { display: none !important; }
+
+/* Location dot — GPS position */
+.map-marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2.5px solid var(--abyss);
+  box-shadow: 0 0 0 4px var(--accent-dim), 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Selected location pin */
+.map-pin {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg) translate(-4px, -4px);
+  border: 2px solid var(--abyss);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+
+.map-pin::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--abyss);
+  border-radius: 50%;
+  transform: rotate(45deg);
+}
